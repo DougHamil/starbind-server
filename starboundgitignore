@@ -1,5 +1,1 @@
-*.png
-*.ogg
-*.animation
-*.frames
-*.wav
+default_configuration.config

@@ -11,6 +11,7 @@
     "events": "~0.5.0",
     "through": "~2.3.4",
     "inherits": "~2.0.1",
-    "http-duplex": "0.0.2"
+    "http-duplex": "0.0.2",
+    "unzip": "~0.1.9"
   }
 }

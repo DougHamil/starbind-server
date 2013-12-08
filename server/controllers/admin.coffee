@@ -44,7 +44,7 @@ exports.init = (app) ->
       if err
         res.send 500, err
       else
-        res.render 'admin', {status:{isRunning:Starbound.serverProcess?, log:Starbound.log},config:JSON.parse(data)}
+        res.render 'admin', {installFound:Starbound.repo?,status:{isRunning:Starbound.serverProcess?, log:Starbound.log},config:JSON.parse(data)}
 
 
 

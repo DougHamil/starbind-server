@@ -19,6 +19,14 @@ console.log "DIR PATH: #{gitDirPath}"
 gitServer = new GitServer('starbound-server.git', gitDirPath, CONFIG.REPO_PORT, users)
 
 exports.init = (app) ->
+  # Merge all changes in the mod directory
+  app.get '/git/merge', (req, res) ->
+    Starbound.mergeMods (err) ->
+      if err?
+        res.send 500, err
+      else
+        res.send 200, "Done"
+
   # Return all available branches
   app.get '/git/mods', (req, res) ->
     Starbound.getBranches (err, branches) ->
