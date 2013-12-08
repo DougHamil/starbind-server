@@ -1,0 +1,4 @@
+node_modules
+**/*.swp
+config.json
+data.json

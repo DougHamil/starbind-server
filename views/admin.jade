@@ -1,0 +1,26 @@
+include mixins
+
+html
+	head
+		link(rel='stylesheet',href='/css/admin.css')
+		script(src="http://code.jquery.com/jquery-1.10.1.min.js")
+		script(src="/js/propEdit.js")
+		title Starbind - Admin Panel
+	body
+		h1 Starbind - Admin Panel
+		h3 Status
+		div#status
+			if status.isRunning
+				p Starbound server is running.
+					a(href="/admin/server/stop")= " Stop Server."
+			else
+				p Starbound server is not running.
+					a(href="/admin/server/start")= " Start Server."
+		h3 Configuration
+		mixin propEdit('Game Port', 'number', 'default_configuration.config', 'gamePort')
+		mixin propEditArray('Passwords', 'text', 'default_configuration.config', '$.serverPasswords[*]')
+		mixin propEdit('Chunk Size', 'number', 'celestial.config', 'chunkSize')
+		h3 Log
+		div#log
+			each log in status.log
+				div= log

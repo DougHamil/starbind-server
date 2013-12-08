@@ -1,0 +1,10 @@
+mixin propEdit(label, type, file, prop)
+	.prop(data-file='#{file}',data-prop='#{prop}')
+		label #{label}:
+		input(type=type)
+		input(class="savebtn",type="button",value="Save",name="Save")
+
+mixin propEditArray(label, type, file, prop)
+	.propArray(data-file='#{file}',data-prop='#{prop}')
+		label #{label}:
+		input(class="savebtn",type="button",value="Save",name="Save")

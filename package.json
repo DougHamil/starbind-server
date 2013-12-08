@@ -1,0 +1,16 @@
+{
+  "name": "starbind",
+  "description": "Admin panel for Starbound",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "3.x",
+    "jade": "x",
+    "JSONPath": "~0.9.1",
+    "git-server": "~0.2.0",
+    "gift": "~0.1.1",
+    "events": "~0.5.0",
+    "through": "~2.3.4",
+    "inherits": "~2.0.1",
+    "http-duplex": "0.0.2"
+  }
+}

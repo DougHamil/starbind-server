@@ -1,0 +1,8 @@
+Create client-side Starmap
+	- Construct Git repo for client install if none exists
+	- Request server IP
+	- Request login info
+	- Set remote origin on client repo to server using login info
+	- Pull changes from remote
+	- Launch game (and connect to server?)
+

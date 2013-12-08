@@ -1,0 +1,7 @@
+{
+	"SESSION_SECRET":"STARBIND_SESSION_SECRET",
+	"PORT":1337,
+	"STARBOUND_INSTALL_DIR":"/path/to/starbound/directory",
+	"PLATFORM":"linux64",
+	"MAX_LOG_SIZE":64
+}
