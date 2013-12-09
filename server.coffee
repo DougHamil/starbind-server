@@ -21,9 +21,10 @@ Starbound.init (err) ->
   if not err?
     if CONFIG.isServer
       console.log "Running in SERVER mode."
-      AdminController.init(app)
-      PropController.init(app)
-      GitController.init(app)
+      Starbound.mergeMods (err) ->
+        AdminController.init(app)
+        PropController.init(app)
+        GitController.init(app)
     else
       console.log "Running in CLIENT mode."
       ClientController.init(app)
