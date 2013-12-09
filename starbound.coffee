@@ -31,6 +31,7 @@ module.exports =
   serverProcess: null
   log:[]
   assetPath: repoPath
+  installFound:false
   getAssetPath: (prop) ->
     return path.join @assetPath, prop
   getBranches: (cb) ->
@@ -92,6 +93,8 @@ module.exports =
         extractNext cb
 
   init: (cb) ->
+    @installFound = fs.existsSync(CONFIG.STARBOUND_INSTALL_DIR)
+
     if not fs.existsSync(path.join(process.cwd(), "mods"))
       fs.mkdir path.join(process.cwd(), "mods")
     if not fs.existsSync(@assetPath)

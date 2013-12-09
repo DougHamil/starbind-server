@@ -25,7 +25,7 @@ synchronize = (remote, res) ->
 
 exports.init = (app) ->
   app.get '/', (req,res) ->
-    res.render 'client', {installFound:Starbound.foundInstallDir}
+    res.render 'client', {installFound:Starbound.installFound}
 
   app.post '/sync', (req, res) ->
     host = req.body.host

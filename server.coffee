@@ -1,5 +1,6 @@
 CONFIG = require './server/config'
 express = require 'express'
+open = require 'open'
 
 Starbound = require './starbound'
 AdminController = require './server/controllers/admin'
@@ -25,11 +26,15 @@ Starbound.init (err) ->
         AdminController.init(app)
         PropController.init(app)
         GitController.init(app)
+        console.log "Server listening on port #{CONFIG.PORT}"
+        app.listen CONFIG.PORT, ->
+          open('http://localhost:'+CONFIG.PORT)
     else
       console.log "Running in CLIENT mode."
       ClientController.init(app)
-    console.log "Server listening on port #{CONFIG.PORT}"
-    app.listen CONFIG.PORT
+      console.log "Server listening on port #{CONFIG.PORT}"
+      app.listen CONFIG.PORT, () ->
+        open('http://localhost:'+CONFIG.PORT)
   else
     console.log "Error initializing Starbound server:"
     console.log err
