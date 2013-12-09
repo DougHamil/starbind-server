@@ -5,6 +5,7 @@ Starbound = require './starbound'
 AdminController = require './server/controllers/admin'
 PropController = require './server/controllers/prop'
 GitController = require './server/controllers/git'
+ClientController = require './server/controllers/client'
 
 sessionStore = new express.session.MemoryStore()
 
@@ -18,9 +19,14 @@ app.set 'view engine', 'jade'
 
 Starbound.init (err) ->
   if not err?
-    AdminController.init(app)
-    PropController.init(app)
-    GitController.init(app)
+    if CONFIG.isServer
+      console.log "Running in SERVER mode."
+      AdminController.init(app)
+      PropController.init(app)
+      GitController.init(app)
+    else
+      console.log "Running in CLIENT mode."
+      ClientController.init(app)
     console.log "Server listening on port #{CONFIG.PORT}"
     app.listen CONFIG.PORT
   else

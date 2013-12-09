@@ -17,4 +17,9 @@ CONFIG.save = (cb) ->
       console.log "Error saving config: #{err}"
     cb err
 
+CONFIG.isServer = false
+process.argv.forEach (val, index, array) ->
+  if val == 'server'
+    CONFIG.isServer = true
+
 module.exports = CONFIG

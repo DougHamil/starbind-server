@@ -16,7 +16,8 @@ repoConfig =
 
 gitDirPath = path.join Starbound.assetPath, '.git'
 console.log "DIR PATH: #{gitDirPath}"
-gitServer = new GitServer('starbound-server.git', gitDirPath, CONFIG.REPO_PORT, users)
+if CONFIG.isServer
+  gitServer = new GitServer('starbound-server.git', gitDirPath, CONFIG.REPO_PORT, users)
 
 exports.init = (app) ->
   # Merge all changes in the mod directory
@@ -26,14 +27,6 @@ exports.init = (app) ->
         res.send 500, err
       else
         res.send 200, "Done"
-
-  # Return all available branches
-  app.get '/git/mods', (req, res) ->
-    Starbound.getBranches (err, branches) ->
-      if err?
-        res.send 500, err
-      else
-        res.json branches
 
   # Add a user login
   app.post '/git/user/add', (req, res) ->

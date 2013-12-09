@@ -1,0 +1,23 @@
+html
+	head
+		title Starbind
+	body
+		if !installFound
+			h1 Warning - Starbound install directory not found, please set the configuration property STARBOUND_INSTALL_DIR to the directory of your Starbound installation
+		h1 Starbind - Client
+		p
+			| Enter the IP address (or hostname) and port for the Starbind server you wish to connect to.
+			| This will synchronize your local Starbound client data with the server to ensure mod compatibility with other players on the server.
+		form(method="post", action="/sync")
+			label(for="host") Server:
+			input(type="text",id="host", name="host")
+			br
+			label(for="username") Username:
+			input(type="text", id="username",name="username")
+			br
+			label(for="password") Password:
+			input(type="password", id="password",name="password")
+			br
+			input(type="submit",value="Sync")
+
+

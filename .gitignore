@@ -1,4 +1,6 @@
 node_modules
 **/*.swp
+*.swp
 config.json
 data.json
+mods
