@@ -1,4 +1,5 @@
 CONFIG = require './server/config'
+mods = require './mods'
 Git = require 'gift'
 path = require 'path'
 fs = require 'fs'
@@ -48,6 +49,7 @@ copyFile = (source, target, cb) ->
       cbCalled = true
 
 module.exports =
+  mods:mods
   serverProcess: null
   log:[]
   modPath: path.join(process.cwd(), 'mods')
@@ -82,44 +84,29 @@ module.exports =
         # Purge the asset path
         rimraf @assetPath, =>
           fs.mkdirSync @assetPath
-          fs.readdir modsDir, (err, files) =>
+          @mods.extractTo @assetPath, (err) =>
             if err?
               cb err
             else
-              zipFiles = []
-              files.forEach (file) ->
-                if file.match(/.zip$/)?
-                  zipFiles.push file
-                else
-                  console.log "Bad mod file: #{file}"
-              commit = (cb) =>
-                # Copy git repo back
-                ncp tempDir, path.join(@assetPath, '.git'), (err) =>
-                  temp.cleanup()
-                  @repo.status (err, status) =>
-                    if err?
-                      cb err
+              # Copy git repo back
+              ncp tempDir, path.join(@assetPath, '.git'), (err) =>
+                temp.cleanup()
+                @repo.status (err, status) =>
+                  if err?
+                    cb err
+                  else
+                    # Do nothing if there were no changes
+                    if status.clean
+                      console.log "No changes made since last merge."
+                      cb null
                     else
-                      # Do nothing if there were no changes
-                      if status.clean
-                        console.log "No changes made since last merge."
-                        cb null
-                      else
-                        console.log "Done merging mods, committing changes to repo"
-                        @repo.add '.', (err) =>
-                          @repo.commit 'Mod Merge', (err) =>
-                            if not err? or err.toString() == 'Error: stdout maxBuffer exceeded.'
-                              console.log "Done"
-                              err = null
-                            cb err
-              extractNext = (cb) =>
-                if zipFiles.length > 0
-                  file = zipFiles.pop()
-                  console.log "Merging mod #{file}..."
-                  fs.createReadStream(path.join(modsDir,file)).pipe(unzip.Extract({path: @assetPath})).on('close', () -> extractNext(cb))
-                else
-                  commit cb
-              extractNext cb
+                      console.log "Done merging mods, committing changes to repo"
+                      @repo.add '.', (err) =>
+                        @repo.commit 'Mod Merge', (err) =>
+                          if not err? or err.toString() == 'Error: stdout maxBuffer exceeded.'
+                            console.log "Done"
+                            err = null
+                          cb err
 
   init: (cb) ->
     @installFound = fs.existsSync(CONFIG.STARBOUND_INSTALL_DIR)
@@ -131,11 +118,18 @@ module.exports =
       fs.mkdirSync @assetPath
     if @installFound
       @addModsDirToBootstrap()
-    if not fs.existsSync(path.join(@assetPath, '.git'))
-      console.log "Initializing git repo at #{@assetPath}"
-      Git.init @assetPath, (err, repo) =>
-        @repo = repo
-        cb err
+    initGit = (cb) =>
+      if not fs.existsSync(path.join(@assetPath, '.git'))
+        console.log "Initializing git repo at #{@assetPath}"
+        Git.init @assetPath, (err, repo) =>
+          @repo = repo
+          cb err
+      else
+        @repo = Git @assetPath
+        cb null
+    if CONFIG.isServer
+      @mods.init @modPath, (err) =>
+        initGit cb
     else
-      @repo = Git @assetPath
-      cb null
+      initGit cb
+
