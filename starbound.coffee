@@ -116,7 +116,7 @@ module.exports =
                 if zipFiles.length > 0
                   file = zipFiles.pop()
                   console.log "Merging mod #{file}..."
-                  fs.createReadStream(path.join(modsDir,file)).pipe(unzip.Extract({path: assetPath})).on('close', () -> extractNext(cb))
+                  fs.createReadStream(path.join(modsDir,file)).pipe(unzip.Extract({path: @assetPath})).on('close', () -> extractNext(cb))
                 else
                   commit cb
               extractNext cb
