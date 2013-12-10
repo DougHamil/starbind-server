@@ -27,8 +27,7 @@ Starbound.init (err) ->
         PropController.init(app)
         GitController.init(app)
         console.log "Server listening on port #{CONFIG.PORT}"
-        app.listen CONFIG.PORT, ->
-          open('http://localhost:'+CONFIG.PORT)
+        app.listen CONFIG.PORT
     else
       console.log "Running in CLIENT mode."
       ClientController.init(app)

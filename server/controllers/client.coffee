@@ -6,6 +6,7 @@ ncp = require 'ncp'
 path = require 'path'
 Git = require 'gift'
 temp = require 'temp'
+util = require '../../util'
 
 getRemoteName = (host) ->
   return host.replace(/[^\w\s]/gi, '_')
@@ -27,17 +28,17 @@ exports.init = (app) ->
   app.get '/', (req,res) ->
     res.render 'client', {installFound:Starbound.installFound}
 
+  # Launch the game
+  app.get '/launch', (req, res) ->
+    util.launchGame(Starbound.gamePath)
+
   app.post '/sync', (req, res) ->
     host = req.body.host
-    username = req.body.username
-    password = req.body.password
 
-    if not host? or not username? or not password?
-      res.send 400, "Expected 'host', 'username' and 'password'"
+    if not host?
+      res.send 400, "Expected 'host'"
       return
-
-    repoUrl = "http://#{username}:#{password}@#{host}/starbound-server.git"
-
+    repoUrl = "http://#{host}/starbound-server.git"
     remoteName = getRemoteName(host)
     console.log "Checking for current remotes..."
     Starbound.repo.remotes (err, remotes) ->

@@ -1,9 +1,15 @@
+CONFIG = require '../config'
 path = require 'path'
 http = require 'http'
 handle = require './handle'
 EventEmitter = require('events').EventEmitter
 
-module.exports = (name, repoDir, port, users) ->
+ALLOW_ANON_READS = true
+
+if CONFIG.ALLOW_ANON_PULL?
+  ALLOW_ANON_READS = CONFIG.ALLOW_ANON_PULL
+
+module.exports = (name, repoDir, users) ->
   dirMap = {}
   dirMap[name] = repoDir
   handler = new EventEmitter
@@ -68,7 +74,10 @@ module.exports = (name, repoDir, port, users) ->
   onFetch = (fetch) ->
     log 'Got a FETCH call for', fetch.repo
     if fetch.repo is name
-      processSecurity fetch, 'fetch'
+      if ALLOW_ANON_READS
+        fetch.accept()
+      else
+        processSecurity fetch, 'fetch'
     else
       fetch.reject 500, 'This repo doesn\'t exist'
 
@@ -76,6 +85,10 @@ module.exports = (name, repoDir, port, users) ->
   handler.on 'fetch', onFetch
   handler.on 'info', onFetch
 
+  return handler.handle.bind(handler)
+
+  ###
   server = http.createServer handler.handle.bind(handler)
   server.listen port, ->
     console.log "Repo server listening on #{port}"
+  ###

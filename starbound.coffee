@@ -3,13 +3,33 @@ Git = require 'gift'
 path = require 'path'
 fs = require 'fs'
 unzip = require 'unzip'
+rimraf = require 'rimraf'
+ncp = require 'ncp'
+os = require 'os'
+temp = require 'temp'
+temp.track()
 
-repoPath = path.join CONFIG.STARBOUND_INSTALL_DIR, 'mods'
-gamePaths = []
-gamePaths.push path.join CONFIG.STARBOUND_INSTALL_DIR, "linux64"
-gamePaths.push path.join CONFIG.STARBOUND_INSTALL_DIR, "linux32"
-gamePaths.push path.join CONFIG.STARBOUND_INSTALL_DIR, "win32"
-gamePaths.push path.join CONFIG.STARBOUND_INSTALL_DIR, "Starbound.app/Contents/MacOS"
+MOD_INSTALL_DIR = 'starbind_mods'
+
+repoPath = path.join CONFIG.STARBOUND_INSTALL_DIR, MOD_INSTALL_DIR
+gamePath = null
+platform = os.platform()
+arch = os.arch()
+if platform is 'linux' and arch is 'x64'
+  gamePath = 'linux64'
+else if platform is 'linux'
+  gamePath = 'linux32'
+else if platform is 'win32'
+  gamePath = 'win32'
+else if platform is 'darwin'
+  gamePath = 'Starbound.app/Contents/MacOS'
+else
+  console.log "Unable to determine OS platform, defaulting to linux64!"
+  gamePath = 'linux64'
+
+gamePath = path.join CONFIG.STARBOUND_INSTALL_DIR, gamePath
+
+console.log "Starbound game path set to: #{gamePath}"
 
 copyFile = (source, target, cb) ->
   cbCalled = false
@@ -30,6 +50,8 @@ copyFile = (source, target, cb) ->
 module.exports =
   serverProcess: null
   log:[]
+  modPath: path.join(process.cwd(), 'mods')
+  gamePath:gamePath
   assetPath: repoPath
   installFound:false
   getAssetPath: (prop) ->
@@ -37,89 +59,83 @@ module.exports =
   getBranches: (cb) ->
     @repo.branches cb
   addModsDirToBootstrap: () ->
-    for exeDir in gamePaths
-      data = fs.readFileSync(path.join(exeDir, "bootstrap.config"), 'utf8')
+      data = fs.readFileSync(path.join(@gamePath, "bootstrap.config"), 'utf8')
       if data?
         bootstrap = JSON.parse(data)
         changed = false
         if "../assets" in bootstrap.assetSources
-          if "../mods" not in bootstrap.assetSources
-            bootstrap.assetSources.push "../mods"
+          if "../#{MOD_INSTALL_DIR}" not in bootstrap.assetSources
+            bootstrap.assetSources.push "../#{MOD_INSTALL_DIR}"
             changed = true
         else if "../../../assets" in bootstrap.assetSources
-          if "../../../mods" not in bootstrap.assetSources
-            bootstrap.assetSources.push "../../../mods"
+          if "../../../#{MOD_INSTALL_DIR}" not in bootstrap.assetSources
+            bootstrap.assetSources.push "../../../#{MOD_INSTALL_DIR}"
             changed = true
         if changed
-          fs.writeFileSync path.join(exeDir, "bootstrap.config"), JSON.stringify(bootstrap, null, 2)
+          console.log "Added #{MOD_INSTALL_DIR} to #{path.join(@gamePath, "bootstrap.config")}."
+          fs.writeFileSync path.join(@gamePath, "bootstrap.config"), JSON.stringify(bootstrap, null, 2)
   mergeMods: (cb) ->
     modsDir = path.join(process.cwd(), "mods")
-    assetPath = @assetPath
-    fs.readdir modsDir, (err, files) =>
-      if err?
-        cb err
-      else
-        zipFiles = []
-        files.forEach (file) ->
-          if file.match(/.zip$/)?
-            zipFiles.push file
-          else
-            console.log "Bad mod file: #{file}"
-        commit = (cb) =>
-          @repo.status (err, status) =>
+    # Backup git file
+    temp.mkdir 'starbind_git', (err, tempDir) =>
+      ncp path.join(@assetPath, '.git'), tempDir, (err) =>
+        # Purge the asset path
+        rimraf @assetPath, =>
+          fs.mkdirSync @assetPath
+          fs.readdir modsDir, (err, files) =>
             if err?
               cb err
             else
-              # Do nothing if there were no changes
-              if status.clean
-                console.log "No changes made since last merge."
-                cb null
-              else
-                console.log "Done merging mods, committing changes to repo"
-                @repo.add '.', (err) =>
-                  @repo.commit 'Mod Merge', (err) =>
-                    if not err? or err.toString() == 'Error: stdout maxBuffer exceeded.'
-                      console.log "Done"
-                      err = null
-                    cb err
-
-        extractNext = (cb) =>
-          if zipFiles.length > 0
-            file = zipFiles.pop()
-            console.log "Merging mod #{file}..."
-            fs.createReadStream(path.join(modsDir,file)).pipe(unzip.Extract({path: assetPath})).on('close', () -> extractNext(cb))
-          else
-            commit cb
-        extractNext cb
+              zipFiles = []
+              files.forEach (file) ->
+                if file.match(/.zip$/)?
+                  zipFiles.push file
+                else
+                  console.log "Bad mod file: #{file}"
+              commit = (cb) =>
+                # Copy git repo back
+                ncp tempDir, path.join(@assetPath, '.git'), (err) =>
+                  temp.cleanup()
+                  @repo.status (err, status) =>
+                    if err?
+                      cb err
+                    else
+                      # Do nothing if there were no changes
+                      if status.clean
+                        console.log "No changes made since last merge."
+                        cb null
+                      else
+                        console.log "Done merging mods, committing changes to repo"
+                        @repo.add '.', (err) =>
+                          @repo.commit 'Mod Merge', (err) =>
+                            if not err? or err.toString() == 'Error: stdout maxBuffer exceeded.'
+                              console.log "Done"
+                              err = null
+                            cb err
+              extractNext = (cb) =>
+                if zipFiles.length > 0
+                  file = zipFiles.pop()
+                  console.log "Merging mod #{file}..."
+                  fs.createReadStream(path.join(modsDir,file)).pipe(unzip.Extract({path: assetPath})).on('close', () -> extractNext(cb))
+                else
+                  commit cb
+              extractNext cb
 
   init: (cb) ->
     @installFound = fs.existsSync(CONFIG.STARBOUND_INSTALL_DIR)
-
-    if not fs.existsSync(path.join(process.cwd(), "mods"))
-      fs.mkdir path.join(process.cwd(), "mods")
+    if not fs.existsSync(@modPath)
+      console.log "Creating mod package directory at #{@modPath}"
+      fs.mkdirSync @modPath
     if not fs.existsSync(@assetPath)
-      fs.mkdir @assetPath
-    @addModsDirToBootstrap()
+      console.log "Creating assets directory for mod installation at #{@assetPath}"
+      fs.mkdirSync @assetPath
+    if @installFound
+      @addModsDirToBootstrap()
     if not fs.existsSync(path.join(@assetPath, '.git'))
       console.log "Initializing git repo at #{@assetPath}"
       Git.init @assetPath, (err, repo) =>
         @repo = repo
-        console.log "Detected first time repo creation."
-        console.log "Creating default git ignore file..."
-        copyFile path.join(__dirname, 'starboundgitignore'), path.join(@assetPath, '.gitignore'), (err) =>
-          if not err?
-            console.log "Done."
-            console.log "Adding files to repo..."
-            @repo.add ".", (err) =>
-              console.log "Done"
-              console.log "Creating initial commit..."
-              @repo.commit 'INITIAL', (err) =>
-                if not err? or err.toString() == 'Error: stdout maxBuffer exceeded.'
-                  console.log "Done"
-                  err = null
-                cb err
-          else
-            cb err
+        cb err
     else
       @repo = Git @assetPath
       cb null
