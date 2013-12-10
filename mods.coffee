@@ -32,14 +32,12 @@ module.exports =
         if zipFiles.length > 0
           file = zipFiles.pop()
           try
-            console.log "Examining mod #{file}"
             zipFile = new AdmZip(path.join(@dir, file))
             zipEntries = zipFile.getEntries()
             confData = @extractModConf zipEntries
             if confData?
               confData.file = file
             else
-              console.log 'HERE'
               confData =
                 file: file
             # update index

@@ -44,7 +44,12 @@ exports.init = (app) ->
     if not host?
       res.send 400, "Expected 'host'"
       return
-    repoUrl = "http://#{host}/starbound-server.git"
+    #
+    # Default to HTTP if no protocal is specified
+    hostWithProtocol = host
+    if host.indexOf('http://') isnt 0 and host.indexOf('https://') isnt 0
+      hostWithProtocol = "http://"+host
+    repoUrl = "#{hostWithProtocol}/starbound-server.git"
     remoteName = getRemoteName(host)
     console.log "Checking for current remotes..."
     Starbound.repo.remotes (err, remotes) ->

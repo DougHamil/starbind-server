@@ -27,6 +27,7 @@ module.exports =
         if req.session.loggedIn? and req.session.loggedIn
           next()
         else
+          console.log "Denied request #{req.path}"
           res.redirect '/login'
     else
       next()
