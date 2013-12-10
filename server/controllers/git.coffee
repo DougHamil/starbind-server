@@ -1,5 +1,4 @@
 CONFIG = require '../config'
-Git = require 'gift'
 GitServer = require '../git/server'
 Starbound = require '../../starbound'
 path = require 'path'
