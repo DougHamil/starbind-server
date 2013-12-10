@@ -14,6 +14,7 @@ getRemoteName = (host) ->
 synchronize = (remote, res) ->
   Starbound.repo.remote_fetch remote, (err) ->
     if err?
+      console.log "FETCHING REMOTES: #{err}"
       res.send 500, err
     else
       Starbound.repo.checkout "#{remote}/master", (err) ->
@@ -42,19 +43,18 @@ exports.init = (app) ->
     remoteName = getRemoteName(host)
     console.log "Checking for current remotes..."
     Starbound.repo.remotes (err, remotes) ->
-      if err?
-        res.send 500, err
+      if not remotes?
+        remotes = []
+      remotes = remotes.map (remote) -> remote.name
+      console.log remotes
+      if (remoteName + "/master") in remotes
+        console.log "Remote #{remoteName} found, fetching latest data..."
+        synchronize(remoteName, res)
       else
-        remotes = remotes.map (remote) -> remote.name
-        console.log remotes
-        if (remoteName + "/master") in remotes
-          console.log "Remote #{remoteName} found, fetching latest data..."
-          synchronize(remoteName, res)
-        else
-          console.log "Remote not found, adding remote for #{host}"
-          Starbound.repo.remote_add remoteName, repoUrl, (err) ->
-            if not err?
-              synchronize(remoteName, res)
-            else
-              console.log err
-              res.send 500, err
+        console.log "Remote not found, adding remote for #{host}"
+        Starbound.repo.remote_add remoteName, repoUrl, (err) ->
+          if not err?
+            synchronize(remoteName, res)
+          else
+            console.log err
+            res.send 500, err
