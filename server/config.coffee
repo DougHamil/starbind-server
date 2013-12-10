@@ -1,7 +1,6 @@
 fs = require 'fs'
 path = require 'path'
 os = require 'os'
-util = require '../util'
 
 CONFIG = {}
 try
@@ -38,17 +37,5 @@ CONFIG.isServer = false
 process.argv.forEach (val, index, array) ->
   if val == 'server'
     CONFIG.isServer = true
-
-
-if not fs.existsSync path.join(CONFIG.STARBOUND_INSTALL_DIR)
-  console.log "Searching for Starbound installation directory..."
-  # Attempt to guess at the install directory
-  guess = util.findStarboundPath os.platform(), os.arch()
-  if guess?
-    console.log "Found Starbound installation at #{guess}"
-    CONFIG.STARBOUND_INSTALL_DIR = guess
-    CONFIG.saveSync()
-  else
-    console.log "Unable to find Starbound installation directory, please manually set it in config.json"
 
 module.exports = CONFIG

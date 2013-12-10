@@ -1,27 +1,31 @@
 include mixins
 html
 	head
-		link(rel='stylesheet',href='/css/admin.css')
+		link(rel='stylesheet',href='/css/client.css')
 		script(src="/js/jquery.js")
-		script(src="/js/propEdit.js")
+		script(src="/js/admin.js")
 		title Starbind - Admin Panel
 	body
-		if !installFound
-			h1 Unable to find Starbound installation, please check the STARBOUND_INSTALL_DIR entry in your config.json file
-		h1 Starbind - Admin Panel
-		h3 Status
-		div#status
-			if status.isRunning
-				p Starbound server is running.
-					a(href="/admin/server/stop")= " Stop Server."
-			else
-				p Starbound server is not running.
-					a(href="/admin/server/start")= " Start Server."
-		h3 Configuration
-		mixin propEdit('Game Port', 'number', 'default_configuration.config', 'gamePort')
-		mixin propEditArray('Passwords', 'text', 'default_configuration.config', '$.serverPasswords[*]')
-		mixin propEdit('Chunk Size', 'number', 'celestial.config', 'chunkSize')
-		h3 Log
-		div#log
-			each log in status.log
-				div= log
+		#content
+			if !installFound
+				.innerContent
+					h1.fail Unable to find Starbound installation, please check the STARBOUND_INSTALL_DIR entry in your config.json file
+			.heading
+				h1 Starbind - Admin Panel
+				.subheading Manage your mods and your Starbound server
+			.innerContent
+				#status
+					h2 Server Status
+					if status.isRunning
+						p.success Starbound server is running on port #{config.gamePort}
+						input#stopServerBtn.redbutton(type="button",value="Stop Server")
+					else
+						p.fail Starbound server is stopped
+						input#startServerBtn.button(type="button",value="Start Server")
+					#info
+			.innerContent
+				h2 Mods
+				#mods
+			.innerContent
+				h2 Server Log
+				div#log

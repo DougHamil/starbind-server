@@ -1,0 +1,27 @@
+html
+	head
+		title Starbind
+		link(rel='stylesheet',href='/css/client.css')
+		script(src="/js/jquery.js")
+		script(src="/js/admin.js")
+	body
+		#content
+			.heading
+				h1 Login
+			if !loginFound
+				.innerContent
+					.fail
+						| Admin login not configured.
+						| Please configure the ADMIN_USERNAME and ADMIN_PASSWORD properties in your config.json file then restart the server.
+			else
+				.innerContent
+					form(method="post",action="/login")
+						input.text(type="text",id="username",name="username",placeholder="username")
+						br
+						input.text(type="password",id="password",name="password",placeholder="password")
+						br
+						input.button(type="submit",value="Login")
+				if failed
+					.innerContent
+						.fail Username or password is incorrect, please check your config.json file for admin username and password settings.
+

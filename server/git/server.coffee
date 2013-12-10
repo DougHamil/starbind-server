@@ -86,9 +86,3 @@ module.exports = (name, repoDir, users) ->
   handler.on 'info', onFetch
 
   return handler.handle.bind(handler)
-
-  ###
-  server = http.createServer handler.handle.bind(handler)
-  server.listen port, ->
-    console.log "Repo server listening on #{port}"
-  ###

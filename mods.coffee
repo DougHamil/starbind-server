@@ -3,13 +3,26 @@ unzip = require 'unzip'
 path = require 'path'
 AdmZip = require 'adm-zip'
 
+# Handlers for various types of mod meta-data
+modconfs =
+  "mod.json": (data) ->
+    conf =
+      id: data["internal-name"]
+      name: data.name
+      version: data.version
+      description: data.description
+      author:data.author
+      url: data.url
+
 module.exports =
-  packages: {}
+  index: {}
+
   init: (dir, cb)->
     @dir = dir
     @update(cb)
+
   update: (cb)->
-    @packages = {}
+    @index = {}
     fs.readdir @dir, (err, files) =>
       zipFiles = []
       files.forEach (file) =>
@@ -22,17 +35,15 @@ module.exports =
             console.log "Examining mod #{file}"
             zipFile = new AdmZip(path.join(@dir, file))
             zipEntries = zipFile.getEntries()
-            confData = null
-            zipEntries.forEach (entry) ->
-              if entry.entryName is 'mod.conf'
-                try
-                  confData = JSON.parse(entry.getData().toString())
-                catch err
-                  confData = null
+            confData = @extractModConf zipEntries
             if confData?
-              console.log "Mod author is #{confData.author}"
+              confData.file = file
             else
-              console.log "mod.conf file not found for #{file}"
+              console.log 'HERE'
+              confData =
+                file: file
+            # update index
+            @index[confData.file] = confData
           catch err
             console.log "Error reading #{file}"
           handleNext(cb)
@@ -61,7 +72,13 @@ module.exports =
             fs.createReadStream(path.join(@dir,file)).pipe(unzip.Extract({path: destDir})).on('close', () -> extractNext(cb))
           else
             cb null
-
         extractNext cb
 
-
+  extractModConf: (zipEntries) ->
+    for entry in zipEntries
+      if modconfs[entry.entryName]
+        try
+          return modconfs[entry.entryName](JSON.parse(entry.getData().toString()))
+        catch err
+          console.warn "Unable to parse #{entry.entryName}"
+    return null

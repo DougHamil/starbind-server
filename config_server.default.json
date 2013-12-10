@@ -1,0 +1,10 @@
+{
+	"SESSION_SECRET":"STARBIND_SESSION_SECRET",
+	"PORT": 1337,
+	"STARBOUND_INSTALL_DIR":"/path/to/starbound",
+	"LOG_SIZE":64,
+	"HTTPS_KEY_FILE":"/path/to/key.pem",
+	"HTTPS_CERT_FILE":"/path/to/cert.pem",
+	"ADMIN_USERNAME": "",
+	"ADMIN_PASSWORD": ""
+}

@@ -1,5 +1,7 @@
 CONFIG = require './server/config'
+util = require './util'
 mods = require './mods'
+game = require './game'
 Git = require 'gift'
 path = require 'path'
 fs = require 'fs'
@@ -12,23 +14,10 @@ temp.track()
 
 MOD_INSTALL_DIR = 'starbind_mods'
 
-repoPath = path.join CONFIG.STARBOUND_INSTALL_DIR, MOD_INSTALL_DIR
-gamePath = null
-platform = os.platform()
-arch = os.arch()
-if platform is 'linux' and arch is 'x64'
-  gamePath = 'linux64'
-else if platform is 'linux'
-  gamePath = 'linux32'
-else if platform is 'win32'
-  gamePath = 'win32'
-else if platform is 'darwin'
-  gamePath = 'Starbound.app/Contents/MacOS'
-else
-  console.log "Unable to determine OS platform, defaulting to linux64!"
-  gamePath = 'linux64'
+util.verifyStarboundInstallPath()
 
-gamePath = path.join CONFIG.STARBOUND_INSTALL_DIR, gamePath
+repoPath = path.join CONFIG.STARBOUND_INSTALL_DIR, MOD_INSTALL_DIR
+gamePath = path.join CONFIG.STARBOUND_INSTALL_DIR, util.getExePath()
 
 console.log "Starbound game path set to: #{gamePath}"
 
@@ -48,7 +37,10 @@ copyFile = (source, target, cb) ->
       cb err
       cbCalled = true
 
+game.init(gamePath)
+
 module.exports =
+  game:game
   mods:mods
   serverProcess: null
   log:[]
@@ -113,19 +105,23 @@ module.exports =
     if not fs.existsSync(@modPath)
       console.log "Creating mod package directory at #{@modPath}"
       fs.mkdirSync @modPath
-    if not fs.existsSync(@assetPath)
-      console.log "Creating assets directory for mod installation at #{@assetPath}"
-      fs.mkdirSync @assetPath
     if @installFound
-      @addModsDirToBootstrap()
+      if not fs.existsSync(@assetPath)
+        console.log "Creating assets directory for mod installation at #{@assetPath}"
+        fs.mkdirSync @assetPath
+      if @installFound
+        @addModsDirToBootstrap()
     initGit = (cb) =>
-      if not fs.existsSync(path.join(@assetPath, '.git'))
-        console.log "Initializing git repo at #{@assetPath}"
-        Git.init @assetPath, (err, repo) =>
-          @repo = repo
-          cb err
+      if @installFound
+        if not fs.existsSync(path.join(@assetPath, '.git'))
+          console.log "Initializing git repo at #{@assetPath}"
+          Git.init @assetPath, (err, repo) =>
+            @repo = repo
+            cb err
+        else
+          @repo = Git @assetPath
+          cb null
       else
-        @repo = Git @assetPath
         cb null
     if CONFIG.isServer
       @mods.init @modPath, (err) =>

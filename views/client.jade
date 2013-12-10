@@ -7,23 +7,25 @@ html
 	body
 		#content
 			if !installFound
-				h1 Warning - Starbound install directory not found, please set the configuration property STARBOUND_INSTALL_DIR to the directory of your Starbound installation
-			.heading
-				h1 Starbind
-				.subheading Mod synchronizer for Starbind-enabled Starbound servers
+				.innerContent
+					h1.fail Warning - Starbound install directory not found, please set the configuration property STARBOUND_INSTALL_DIR to the directory of your Starbound installation
+			else
+				.heading
+					h1 Starbind
+					.subheading Mod synchronizer for Starbind-enabled Starbound servers
 
-			.innerContent
-				p Enter the IP address (or hostname) and port for the Starbind server you wish to connect to.
-				form#hostForm
-					input#hostInput.text(type="text",name="host",placeholder="hostname")
-					br
-					input#syncBtn.button(type="button",value="Sync Mods")
-					br
-					input#launchBtn.button(type="button",value="Launch Starbound")
-				#info
-				p Note that the Starbind server port is NOT the same as the Starbound game server port.
-			.innerContent
-				#footer
-					| Questions, comments, bugs? View the project on <a href="https://github.com/DougHamil/starbind-server">GitHub</a>.
+				.innerContent
+					p Enter the IP address (or hostname) and port for the Starbind server you wish to connect to.
+					form#hostForm
+						input#hostInput.text(type="text",name="host",placeholder="hostname")
+						br
+						input#syncBtn.button(type="button",value="Sync Mods")
+						br
+						input#launchBtn.button(type="button",value="Launch Starbound")
+					#info
+					p Note that the Starbind server port is NOT the same as the Starbound game server port.
+				.innerContent
+					#footer
+						| Questions, comments, bugs? View the project on <a href="https://github.com/DougHamil/starbind-server">GitHub</a>.
 
 

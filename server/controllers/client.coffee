@@ -7,6 +7,7 @@ path = require 'path'
 Git = require 'gift'
 temp = require 'temp'
 util = require '../../util'
+spawn = require('child_process').spawn
 
 getRemoteName = (host) ->
   return host.replace(/[^\w\s]/gi, '_')
@@ -31,7 +32,11 @@ exports.init = (app) ->
 
   # Launch the game
   app.get '/launch', (req, res) ->
-    util.launchGame(Starbound.gamePath)
+    proc = Starbound.game.launch()
+    if proc?
+      res.send 200
+    else
+      res.send 500
 
   app.post '/sync', (req, res) ->
     host = req.body.host
