@@ -79,7 +79,8 @@ module.exports =
                 if zipFiles.length > 0
                   file = zipFiles.pop()
                   console.log "Installing mod #{file}..."
-                  fs.createReadStream(path.join(@dir,file)).pipe(unzip.Extract({path: destDir})).on('close', () -> extractNext(cb))
+                  fs.createReadStream(path.join(@dir,file))
+                    .pipe(unzip.Extract({path: destDir})).on('close', () -> extractNext(cb))
                 else
                   cb null
               extractNext cb

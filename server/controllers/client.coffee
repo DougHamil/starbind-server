@@ -50,6 +50,7 @@ exports.init = (app) ->
       hostWithProtocol = "http://"+host
     dirSyncUrl = "#{hostWithProtocol}/starbindsync"
     httpSyncClient Starbound.assetPath, dirSyncUrl, null, (err) ->
+      console.log err
       if err?
         res.send 500, err
       else
