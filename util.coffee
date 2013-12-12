@@ -4,9 +4,20 @@ fs = require 'fs'
 os = require 'os'
 spawn = require('child_process').spawn
 
+if not process.env.HOME?
+  process.env.HOME = '/'
+
 ARCHES =
   win32:
     x64:
+      exePath: 'win32'
+      exe: 'starbound.exe'
+      server_exe: 'starbound_server.exe'
+      dirs:[
+        '/Program Files (x86)/Steam/SteamApps/common/Starbound',
+        '/Program Files/Steam/SteamApps/common/Starbound'
+      ]
+    ia32:
       exePath: 'win32'
       exe: 'starbound.exe'
       server_exe: 'starbound_server.exe'

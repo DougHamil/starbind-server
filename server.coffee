@@ -46,7 +46,7 @@ Starbound.init (err) ->
       console.log "Running in CLIENT mode."
       ClientController.init(app)
       console.log "Server listening on port #{CONFIG.PORT}"
-      app.listen CONFIG.PORT, () ->
+      app.listen CONFIG.PORT, 'localhost', () ->
         open('http://localhost:'+CONFIG.PORT)
   else
     console.log "Error initializing Starbound server:"
