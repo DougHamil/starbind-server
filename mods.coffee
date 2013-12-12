@@ -2,6 +2,10 @@ fs = require 'fs'
 unzip = require 'unzip'
 path = require 'path'
 AdmZip = require 'adm-zip'
+readdirp = require 'readdirp'
+mkdirp = require 'mkdirp'
+_ = require 'underscore'
+rimraf = require 'rimraf'
 
 # Handlers for various types of mod meta-data
 modconfs =
@@ -21,6 +25,7 @@ module.exports =
     @dir = dir
     @update(cb)
 
+  # Update the mod package index
   update: (cb)->
     @index = {}
     fs.readdir @dir, (err, files) =>
@@ -52,25 +57,42 @@ module.exports =
   validFile: (filename) ->
     return filename.match(/.zip$/)?
 
+  # Extract all mod packages into destDir directory
   extractTo: (destDir, cb) ->
-    fs.readdir @dir, (err, files) =>
-      if err?
-        cb err
+    extractPackages = =>
+      fs.readdir @dir, (err, files) =>
+        if err?
+          cb err
+        else
+          # Make sure the dest directory is there
+          mkdirp destDir, (err) =>
+            if err?
+              cb err
+            else
+              zipFiles = []
+              files.forEach (file) =>
+                if @validFile(file)
+                  zipFiles.push file
+                else
+                  console.log "Bad mod file: #{file}"
+              extractNext = (cb) =>
+                if zipFiles.length > 0
+                  file = zipFiles.pop()
+                  console.log "Installing mod #{file}..."
+                  fs.createReadStream(path.join(@dir,file)).pipe(unzip.Extract({path: destDir})).on('close', () -> extractNext(cb))
+                else
+                  cb null
+              extractNext cb
+    fs.exists destDir, (exists) =>
+      if exists
+        # Nuke the directory
+        rimraf destDir, (err) =>
+          if err?
+            cb err
+          else
+            extractPackages()
       else
-        zipFiles = []
-        files.forEach (file) =>
-          if @validFile(file)
-            zipFiles.push file
-          else
-            console.log "Bad mod file: #{file}"
-        extractNext = (cb) =>
-          if zipFiles.length > 0
-            file = zipFiles.pop()
-            console.log "Installing mod #{file}..."
-            fs.createReadStream(path.join(@dir,file)).pipe(unzip.Extract({path: destDir})).on('close', () -> extractNext(cb))
-          else
-            cb null
-        extractNext cb
+        extractPackages()
 
   extractModConf: (zipEntries) ->
     for entry in zipEntries

@@ -2,13 +2,14 @@ CONFIG = require './server/config'
 util = require './util'
 mods = require './mods'
 game = require './game'
-Git = require 'gift'
+Git = require 'nodegit'
 path = require 'path'
 fs = require 'fs'
 unzip = require 'unzip'
 rimraf = require 'rimraf'
 ncp = require 'ncp'
 os = require 'os'
+_ = require 'underscore'
 temp = require 'temp'
 temp.track()
 
@@ -20,22 +21,6 @@ repoPath = path.join CONFIG.STARBOUND_INSTALL_DIR, MOD_INSTALL_DIR
 gamePath = path.join CONFIG.STARBOUND_INSTALL_DIR, util.getExePath()
 
 console.log "Starbound game path set to: #{gamePath}"
-
-copyFile = (source, target, cb) ->
-  cbCalled = false
-  rd = fs.createReadStream(source)
-  rd.on "error", (err) ->
-    done(err)
-  wr = fs.createWriteStream(target)
-  wr.on "error", (err) ->
-    done(err)
-  wr.on "close", (ex) ->
-    done()
-  rd.pipe(wr)
-  done = (err) ->
-    if not cbCalled
-      cb err
-      cbCalled = true
 
 game.init(gamePath)
 
@@ -68,37 +53,15 @@ module.exports =
         if changed
           console.log "Added #{MOD_INSTALL_DIR} to #{path.join(@gamePath, "bootstrap.config")}."
           fs.writeFileSync path.join(@gamePath, "bootstrap.config"), JSON.stringify(bootstrap, null, 2)
-  mergeMods: (cb) ->
-    modsDir = path.join(process.cwd(), "mods")
-    # Backup git file
-    temp.mkdir 'starbind_git', (err, tempDir) =>
-      ncp path.join(@assetPath, '.git'), tempDir, (err) =>
-        # Purge the asset path
-        rimraf @assetPath, =>
-          fs.mkdirSync @assetPath
-          @mods.extractTo @assetPath, (err) =>
-            if err?
-              cb err
-            else
-              # Copy git repo back
-              ncp tempDir, path.join(@assetPath, '.git'), (err) =>
-                temp.cleanup()
-                @repo.status (err, status) =>
-                  if err?
-                    cb err
-                  else
-                    # Do nothing if there were no changes
-                    if status.clean
-                      console.log "No changes made since last merge."
-                      cb null
-                    else
-                      console.log "Done merging mods, committing changes to repo"
-                      @repo.add '.', (err) =>
-                        @repo.commit 'Mod Merge', (err) =>
-                          if not err? or err.toString() == 'Error: stdout maxBuffer exceeded.'
-                            console.log "Done"
-                            err = null
-                          cb err
+
+  mergeMods: (httpSyncServer, cb) ->
+    # Extract all mods to the asset path (it will clear it out first)
+    @mods.extractTo @assetPath, (err) =>
+      if err?
+        cb err
+      else
+        # Update the manifest for our file server
+        httpSyncServer.update cb
 
   init: (cb) ->
     @installFound = fs.existsSync(CONFIG.STARBOUND_INSTALL_DIR)
@@ -106,26 +69,9 @@ module.exports =
       console.log "Creating mod package directory at #{@modPath}"
       fs.mkdirSync @modPath
     if @installFound
-      if not fs.existsSync(@assetPath)
-        console.log "Creating assets directory for mod installation at #{@assetPath}"
-        fs.mkdirSync @assetPath
-      if @installFound
-        @addModsDirToBootstrap()
-    initGit = (cb) =>
-      if @installFound
-        if not fs.existsSync(path.join(@assetPath, '.git'))
-          console.log "Initializing git repo at #{@assetPath}"
-          Git.init @assetPath, (err, repo) =>
-            @repo = repo
-            cb err
-        else
-          @repo = Git @assetPath
-          cb null
-      else
-        cb null
+      @addModsDirToBootstrap()
     if CONFIG.isServer
-      @mods.init @modPath, (err) =>
-        initGit cb
+      @mods.init @modPath, cb
     else
-      initGit cb
+      cb null
 

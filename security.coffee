@@ -21,7 +21,7 @@ module.exports =
   authHandler: (req, res, next) ->
     if CONFIG.isServer
       # All Git server requests are fine
-      if req.path.indexOf('/starbound-server.git') == 0 or req.path.indexOf('/login') == 0 or req.path.indexOf('/logout') == 0
+      if req.path.indexOf('/starbindsync') == 0 or req.path.indexOf('/login') == 0 or req.path.indexOf('/logout') == 0
         next()
       else
         if req.session.loggedIn? and req.session.loggedIn

@@ -6,8 +6,8 @@ Security = require './security'
 Starbound = require './starbound'
 AdminController = require './server/controllers/admin'
 PropController = require './server/controllers/prop'
-GitController = require './server/controllers/git'
 ClientController = require './server/controllers/client'
+SyncController = require './server/controllers/sync'
 
 sessionStore = new express.session.MemoryStore()
 
@@ -37,10 +37,9 @@ Starbound.init (err) ->
   if not err?
     if CONFIG.isServer
       console.log "Running in SERVER mode."
-      Starbound.mergeMods (err) ->
-        AdminController.init(app)
-        PropController.init(app)
-        GitController.init(app)
+      AdminController.init(app)
+      PropController.init(app)
+      SyncController.init app, (err) ->
         console.log "Server listening on port #{CONFIG.PORT}"
         app.listen CONFIG.PORT
     else
