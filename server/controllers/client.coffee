@@ -4,10 +4,10 @@ os = require 'os'
 rimraf = require 'rimraf'
 ncp = require 'ncp'
 path = require 'path'
-Git = require 'gift'
 temp = require 'temp'
 util = require '../../util'
 spawn = require('child_process').spawn
+httpSyncClient = require('http-dir-sync').Client
 
 getRemoteName = (host) ->
   return host.replace(/[^\w\s]/gi, '_')
@@ -44,27 +44,13 @@ exports.init = (app) ->
     if not host?
       res.send 400, "Expected 'host'"
       return
-    #
     # Default to HTTP if no protocal is specified
     hostWithProtocol = host
     if host.indexOf('http://') isnt 0 and host.indexOf('https://') isnt 0
       hostWithProtocol = "http://"+host
-    repoUrl = "#{hostWithProtocol}/starbound-server.git"
-    remoteName = getRemoteName(host)
-    console.log "Checking for current remotes..."
-    Starbound.repo.remotes (err, remotes) ->
-      if not remotes?
-        remotes = []
-      remotes = remotes.map (remote) -> remote.name
-      console.log remotes
-      if (remoteName + "/master") in remotes
-        console.log "Remote #{remoteName} found, fetching latest data..."
-        synchronize(remoteName, res)
+    dirSyncUrl = "#{hostWithProtocol}/starbindsync"
+    httpSyncClient Starbound.assetPath, dirSyncUrl, null, (err) ->
+      if err?
+        res.send 500, err
       else
-        console.log "Remote not found, adding remote for #{host}"
-        Starbound.repo.remote_add remoteName, repoUrl, (err) ->
-          if not err?
-            synchronize(remoteName, res)
-          else
-            console.log err
-            res.send 500, err
+        res.send 200
