@@ -20,6 +20,11 @@
     "underscore": "~1.5.2",
     "http-dir-sync": "git+http://github.com/DougHamil/http-dir-sync.git",
     "mkdirp": "~0.3.5",
-    "fstream": "~0.1.25"
+    "fstream": "~0.1.25",
+    "async": "~0.2.9",
+    "string": "~1.7.0",
+    "deepmerge": "~0.2.7",
+    "JSONStream": "~0.7.1",
+    "event-stream": "~3.0.20"
   }
 }

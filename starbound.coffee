@@ -17,6 +17,7 @@ MOD_INSTALL_DIR = 'starbind_mods'
 util.verifyStarboundInstallPath()
 
 repoPath = path.join CONFIG.STARBOUND_INSTALL_DIR, MOD_INSTALL_DIR
+realAssetPath = path.join CONFIG.STARBOUND_INSTALL_DIR, "assets"
 gamePath = path.join CONFIG.STARBOUND_INSTALL_DIR, util.getExePath()
 
 console.log "Starbound game path set to: #{gamePath}"
@@ -31,6 +32,7 @@ module.exports =
   modPath: path.join(process.cwd(), 'mods')
   gamePath:gamePath
   assetPath: repoPath
+  realAssetPath: realAssetPath
   installFound:false
   getAssetPath: (prop) ->
     return path.join @assetPath, prop
@@ -70,7 +72,7 @@ module.exports =
     if @installFound
       @addModsDirToBootstrap()
     if CONFIG.isServer
-      @mods.init @modPath, cb
+      @mods.init @modPath, @realAssetPath, cb
     else
       cb null
 
