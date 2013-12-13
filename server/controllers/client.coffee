@@ -12,20 +12,6 @@ httpSyncClient = require('http-dir-sync').Client
 getRemoteName = (host) ->
   return host.replace(/[^\w\s]/gi, '_')
 
-synchronize = (remote, res) ->
-  Starbound.repo.remote_fetch remote, (err) ->
-    if err?
-      console.log "FETCHING REMOTES: #{err}"
-      res.send 500, err
-    else
-      Starbound.repo.checkout "#{remote}/master", (err) ->
-        if err?
-          console.log err
-          res.send 500, err
-        else
-          console.log "Successfully synchronized to #{remote}"
-          res.send 200, "Done"
-
 exports.init = (app) ->
   app.get '/', (req,res) ->
     res.render 'client', {installFound:Starbound.installFound}
@@ -50,7 +36,7 @@ exports.init = (app) ->
       hostWithProtocol = "http://"+host
     dirSyncUrl = "#{hostWithProtocol}/starbindsync"
     httpSyncClient Starbound.assetPath, dirSyncUrl, null, (err) ->
-      console.log err
+      console.log
       if err?
         res.send 500, err
       else
