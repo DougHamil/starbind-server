@@ -1,4 +1,4 @@
-CONFIG = require './server/config'
+CONFIG = require './config'
 fs = require 'fs'
 
 credentials = null

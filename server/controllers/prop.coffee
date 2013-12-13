@@ -1,5 +1,5 @@
 CONFIG = require '../config'
-Starbound = require '../../starbound'
+Starbound = require '../starbound'
 jsonpath = require('JSONPath').eval
 fs = require 'fs'
 

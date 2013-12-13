@@ -1,11 +1,11 @@
 CONFIG = require '../config'
-Starbound = require '../../starbound'
+Starbound = require '../starbound'
 os = require 'os'
 rimraf = require 'rimraf'
 ncp = require 'ncp'
 path = require 'path'
 temp = require 'temp'
-util = require '../../util'
+util = require '../util'
 spawn = require('child_process').spawn
 httpSyncClient = require('http-dir-sync').Client
 
@@ -26,17 +26,18 @@ exports.init = (app) ->
 
   app.post '/sync', (req, res) ->
     host = req.body.host
-
+   
     if not host?
       res.send 400, "Expected 'host'"
       return
+    console.log "Sync request"
     # Default to HTTP if no protocal is specified
     hostWithProtocol = host
     if host.indexOf('http://') isnt 0 and host.indexOf('https://') isnt 0
       hostWithProtocol = "http://"+host
     dirSyncUrl = "#{hostWithProtocol}/starbindsync"
+    console.log dirSyncUrl
     httpSyncClient Starbound.assetPath, dirSyncUrl, null, (err) ->
-      console.log
       if err?
         res.send 500, err
       else

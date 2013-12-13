@@ -1,5 +1,5 @@
 CONFIG = require '../config'
-Starbound = require '../../starbound'
+Starbound = require '../starbound'
 httpsync = require 'http-dir-sync'
 path = require 'path'
 

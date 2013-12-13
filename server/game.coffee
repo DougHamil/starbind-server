@@ -1,5 +1,5 @@
 util = require './util'
-CONFIG = require './server/config'
+CONFIG = require './config'
 path = require 'path'
 spawn = require('child_process').spawn
 fs = require 'fs'

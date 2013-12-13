@@ -1,4 +1,4 @@
-CONFIG = require './server/config'
+CONFIG = require './config'
 util = require './util'
 mods = require './mods'
 game = require './game'
@@ -29,7 +29,7 @@ module.exports =
   mods:mods
   serverProcess: null
   log:[]
-  modPath: path.join(process.cwd(), 'mods')
+  modPath: path.resolve(process.cwd(), '../mods')
   gamePath:gamePath
   assetPath: repoPath
   realAssetPath: realAssetPath

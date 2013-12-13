@@ -1,5 +1,5 @@
 CONFIG = require '../config'
-Starbound = require '../../starbound'
+Starbound = require '../starbound'
 fs = require 'fs'
 spawn = require('child_process').spawn
 

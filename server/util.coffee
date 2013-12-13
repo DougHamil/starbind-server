@@ -1,4 +1,4 @@
-CONFIG = require './server/config'
+CONFIG = require './config'
 path = require 'path'
 fs = require 'fs'
 os = require 'os'

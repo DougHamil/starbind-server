@@ -1,13 +1,14 @@
-CONFIG = require './server/config'
+CONFIG = require './config'
 express = require 'express'
 open = require 'open'
 Security = require './security'
+path = require 'path'
 
 Starbound = require './starbound'
-AdminController = require './server/controllers/admin'
-PropController = require './server/controllers/prop'
-ClientController = require './server/controllers/client'
-SyncController = require './server/controllers/sync'
+AdminController = require './controllers/admin'
+PropController = require './controllers/prop'
+ClientController = require './controllers/client'
+SyncController = require './controllers/sync'
 
 sessionStore = new express.session.MemoryStore()
 
@@ -15,9 +16,9 @@ app = express()
 app.use express.bodyParser()
 app.use express.cookieParser()
 app.use express.session({store:sessionStore, secret: CONFIG.SESSION_SECRET})
-app.use express.static('public')
+app.use express.static(__dirname + '/public')
 app.use Security.authHandler
-app.set 'views', __dirname + '/views'
+app.set 'views', path.resolve(__dirname,'../views')
 app.set 'view engine', 'jade'
 
 startServer = (openBrowser) ->
