@@ -33,7 +33,7 @@ exports.init = (app) ->
   app.post '/login', (req, res) ->
     user = req.body.username
     pass = req.body.password
-    if CONFIG.ADMIN_USERNAME is user and CONFIG.ADMIN_PASSWORD is pass
+    if CONFIG.ADMIN_USERNAME isnt '' and CONFIG.ADMIN_PASSWORD isnt '' and CONFIG.ADMIN_USERNAME is user and CONFIG.ADMIN_PASSWORD is pass
       req.session.loggedIn = true
       res.redirect '/'
     else
