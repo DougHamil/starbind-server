@@ -25,6 +25,7 @@
     "string": "~1.7.0",
     "deepmerge": "~0.2.7",
     "JSONStream": "~0.7.1",
-    "event-stream": "~3.0.20"
+    "event-stream": "~3.0.20",
+    "coffee-script": "~1.6.3"
   }
 }
