@@ -11,7 +11,7 @@ WINDOWS_NODEJS_EXE = 'http://nodejs.org/dist/v0.10.23/node.exe'
 # Files to not copy to output directory
 IGNORE_FILES = ['config_server.default.json', 'config.default.json', 'config.json', 'build.js', 'install.sh', 'run.sh', '.nodemonignore', '.gitignore', 'README.md', 'package.json']
 # Directories not to copy to output directory
-IGNORE_DIRS = ['build', 'mods']
+IGNORE_DIRS = ['.git', 'build', 'mods']
 
 
 module.exports = (cb)->
@@ -36,7 +36,7 @@ module.exports = (cb)->
   opts =
     filter: (file) ->
       file = file.replace(/\\/g, '/')
-      if file[0] == '.'
+      if file.indexOf('.git/') != -1
         return false
       else if file in ignoreFiles
         return false
