@@ -76,8 +76,6 @@ module.exports =
   validFile: (filename) ->
     return filename.match(/.zip$/)?
 
-  sanitizeCommentJson: (data) ->
-
   loadAsset: (assetFile, cb) ->
     fs.readFile assetFile, 'utf8', (err, data) ->
       try
