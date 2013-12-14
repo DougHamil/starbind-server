@@ -10,10 +10,10 @@ Hosting a Starbind Server
 ---------------------------------
 
 ### Mac OSX
-Download the Starbind OSX build and unzip to the directory of your choice. Edit the config.json file with your settings (see below for a description of the settings).  Place your mod zip files in the `mods` directory. Double click the StarboundServer.command file to start the server.
+Download the [Starbind OSX build](https://drive.google.com/file/d/0B_KMZkpoafXuZTE2ZTQ2SDI0RjA/edit?usp=sharing) and unzip to the directory of your choice. Edit the config.json file with your settings (see below for a description of the settings).  Place your mod zip files in the `mods` directory. Double click the StarboundServer.command file to start the server.
 
 ### Windows
-Download the Starbind Win32 build and unzip to the directory of your choice. Edit the config.json file with your settings (see below for a description of the settings).  Place your mod zip files in the `mods` directory. Double click the StarbindServer.bat file to start the server.
+Download the [Starbind Windows build](https://drive.google.com/file/d/0B_KMZkpoafXuakQxVTE3Um9Ya1k/edit?usp=sharing) and unzip to the directory of your choice. Edit the config.json file with your settings (see below for a description of the settings).  Place your mod zip files in the `mods` directory. Double click the StarbindServer.bat file to start the server.
 
 ### Linux
 First, [install NodeJS](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
