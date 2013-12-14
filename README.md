@@ -21,10 +21,7 @@ First, [install NodeJS](https://github.com/joyent/node/wiki/Installing-Node.js-v
 Once NodeJS is installed, download Starbind using Git:
 ` git clone https://github.com/DougHamil/starbind-server.git`
 
-Copy the config_server.default.json file to config.json
-` cp config_server.default.json config.json`
-
-Edit the new config.json file to match your settings (see below for a description of the settings)
+Create a new config.json file in your Starbind directory and modify it with the settings for your server (see below for a description of the settings)
 
 Next, install Starbind NodeJS dependencies with
 
