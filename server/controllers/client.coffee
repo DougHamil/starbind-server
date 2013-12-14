@@ -26,11 +26,9 @@ exports.init = (app) ->
 
   app.post '/sync', (req, res) ->
     host = req.body.host
-   
     if not host?
       res.send 400, "Expected 'host'"
       return
-    console.log "Sync request"
     # Default to HTTP if no protocal is specified
     hostWithProtocol = host
     if host.indexOf('http://') isnt 0 and host.indexOf('https://') isnt 0

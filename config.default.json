@@ -1,8 +1,4 @@
 {
-	"SESSION_SECRET":"STARBIND_SESSION_SECRET",
 	"PORT":1337,
-	"STARBOUND_INSTALL_DIR":"/path/to/starbound",
-	"MAX_LOG_SIZE":64,
-	"ADMIN_USERNAME":"",
-	"ADMIN_PASSWORD":""
+	"STARBOUND_INSTALL_DIR":"/path/to/starbound"
 }
