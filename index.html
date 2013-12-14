@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Starbind by DougHamil</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Starbind</h1>
+        <h2>Mod synchronizer for Starbound</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/DougHamil/starbind-server/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/DougHamil/starbind-server/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/DougHamil/starbind-server" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="starbind" class="anchor" href="#starbind"><span class="octicon octicon-link"></span></a>Starbind</h1>
+
+<p>Starbind is a program to allow easy mod synchronization between clients and servers for the game Starbound.</p>
+
+<p>If you host a Starbound server and would like to allow players to use Starbind to synchronize mods specifically for your
+server, then follow the Server installation instructions below.</p>
+
+<h2>
+<a name="hosting-a-starbind-server" class="anchor" href="#hosting-a-starbind-server"><span class="octicon octicon-link"></span></a>Hosting a Starbind Server</h2>
+
+<h3>
+<a name="mac-osx" class="anchor" href="#mac-osx"><span class="octicon octicon-link"></span></a>Mac OSX</h3>
+
+<p>Download the Starbind OSX build and unzip to the directory of your choice. Edit the config.json file with your settings (see below for a description of the settings).  Place your mod zip files in the <code>mods</code> directory. Double click the StarboundServer.command file to start the server.</p>
+
+<h3>
+<a name="windows" class="anchor" href="#windows"><span class="octicon octicon-link"></span></a>Windows</h3>
+
+<p>Download the Starbind Win32 build and unzip to the directory of your choice. Edit the config.json file with your settings (see below for a description of the settings).  Place your mod zip files in the <code>mods</code> directory. Double click the StarbindServer.bat file to start the server.</p>
+
+<h3>
+<a name="linux" class="anchor" href="#linux"><span class="octicon octicon-link"></span></a>Linux</h3>
+
+<p>First, <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">install NodeJS</a></p>
+
+<p>Once NodeJS is installed, download Starbind using Git:
+<code>git clone https://github.com/DougHamil/starbind-server.git</code></p>
+
+<p>Copy the config_server.default.json file to config.json
+<code>cp config_server.default.json config.json</code></p>
+
+<p>Edit the new config.json file to match your settings (see below for a description of the settings)</p>
+
+<p>Next, install Starbind NodeJS dependencies with</p>
+
+<p><code>npm install</code></p>
+
+<p>And run Starbind with</p>
+
+<p><code>node app.js server</code></p>
+
+<h2>
+<a name="starbind-server-configuration-settings" class="anchor" href="#starbind-server-configuration-settings"><span class="octicon octicon-link"></span></a>Starbind Server Configuration Settings</h2>
+
+<p>The config.json file contains the various configuration settings available:</p>
+
+<blockquote>
+<p>PORT: The port for the Starbind server, NOT the same port as your Starbound game server</p>
+
+<p>STARBOUND_INSTALL_DIR: Path to the base of your Starbound game installation</p>
+
+<p>ADMIN_USERNAME: Username for the admin login</p>
+
+<p>ADMIN_PASSWORD: Password for the admin login</p>
+
+<p>SESSION_SECRET: Random string to be used for login sessions</p>
+
+<p>HTTPS_KEY_FILE: Key.pem file for HTTPS, if you want use HTTPS specify the location of the file using the property</p>
+
+<p>HTTPS_CERT_FILE: cert.pem file for HTTPS, if you want to use HTTPS specify the location of the cert.pem file here.</p>
+</blockquote>
+
+<p>If you leave ADMIN_USERNAME or ADMIN_PASSWORD unset or an empty string, admin login will be disabled.
+If the HTTPS_KEY_FILE or HTTPS_CERT_FILE properties don't point to valid locations, then Starbind will fall back to HTTP.</p>
+
+<p>To enable admin login you MUST specify ADMIN_USERNAME, ADMIN_PASSWORD, and SESSION_SECRET.</p>
+
+<h3>
+<a name="example-configjson" class="anchor" href="#example-configjson"><span class="octicon octicon-link"></span></a>Example config.json</h3>
+
+<pre><code>{
+    "PORT":1337,
+    "STARBOUND_INSTALL_DIR":"/path/to/starbound",
+    "ADMIN_USERNAME":"admin",
+    "ADMIN_PASSWORD":"password",
+    "SESSION_SECRET":"MySessionSecret"
+}
+</code></pre>
+
+<h2>
+<a name="installing-mods" class="anchor" href="#installing-mods"><span class="octicon octicon-link"></span></a>Installing Mods</h2>
+
+<p>To install a mod on the server, just drop the mod zip file in the mods directory in your Starbind installation directory.
+Starbind supports the standard mod zip packages and will look for a mod.json metadata file for mod info.
+Additionally, Starbind does merging and allows for partial mods to base game assets.  See mod merging below for more info.</p>
+
+<p>After adding a mod zip folder to the mods directory, you will need to restart Starbind server in order for the changes to be merged in.</p>
+
+<p>At the moment there is no mod manager besides a simple mod package listing available if you set a admin username/password and navigate
+to the Starbind server on your browser.</p>
+
+<h2>
+<a name="admin-panel" class="anchor" href="#admin-panel"><span class="octicon octicon-link"></span></a>Admin Panel</h2>
+
+<p>By supplying an admin username and password in your config.json file you will be able to login to your Starbind server by pointing your browser to the server.  Once logged in, an admin panel is provided with some basic information regarding your server.  The admin panel is still in progress as of this writing, but it will list your installed mods and give the option to start your Starbound server, though it is NOT required to start your Starbound server through the Starbind admin panel.</p>
+
+<h2>
+<a name="mod-support-and-merging" class="anchor" href="#mod-support-and-merging"><span class="octicon octicon-link"></span></a>Mod Support and Merging</h2>
+
+<p>Starbind works with zipped mod packages as most other mod managers. Starbind also supports differential mods to existing game assets
+meaning a mod can specify a player.config mod and only list the properties that should change. Starbind will read in the existing player.config
+file from the Starbound/assets directory and merge the change. It will do the same with any conflicting mods.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
