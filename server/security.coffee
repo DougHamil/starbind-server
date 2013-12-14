@@ -1,5 +1,6 @@
 CONFIG = require './config'
 fs = require 'fs'
+path = require 'path'
 
 credentials = null
 if CONFIG.HTTPS_KEY_FILE? and CONFIG.HTTPS_CERT_FILE?
