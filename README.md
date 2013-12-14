@@ -45,12 +45,16 @@ The config.json file contains the various configuration settings available:
 
 > ADMIN_PASSWORD: Password for the admin login
 
+> SESSION_SECRET: Random string to be used for login sessions
+
 > HTTPS_KEY_FILE: Key.pem file for HTTPS, if you want use HTTPS specify the location of the file using the property
 
 > HTTPS_CERT_FILE: cert.pem file for HTTPS, if you want to use HTTPS specify the location of the cert.pem file here.
 
 If you leave ADMIN_USERNAME or ADMIN_PASSWORD unset or an empty string, admin login will be disabled.
-If the HTTPS_KEY_FILE or HTTPS_CERT_FILE properties don't point to valid locations, then Starbind will fall back to HTTP
+If the HTTPS_KEY_FILE or HTTPS_CERT_FILE properties don't point to valid locations, then Starbind will fall back to HTTP.
+
+To enable admin login you MUST specify ADMIN_USERNAME, ADMIN_PASSWORD, and SESSION_SECRET.
 
 ### Example config.json
 
@@ -58,7 +62,8 @@ If the HTTPS_KEY_FILE or HTTPS_CERT_FILE properties don't point to valid locatio
     	"PORT":1337,
     	"STARBOUND_INSTALL_DIR":"/path/to/starbound",
     	"ADMIN_USERNAME":"admin",
-    	"ADMIN_PASSWORD":"password"
+    	"ADMIN_PASSWORD":"password",
+    	"SESSION_SECRET":"MySessionSecret"
     }
 
 
