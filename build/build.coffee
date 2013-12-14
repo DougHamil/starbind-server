@@ -5,6 +5,7 @@ rimraf = require 'rimraf'
 ncp = require 'ncp'
 http = require 'http'
 path = require 'path'
+EasyZip = require('easy-zip').EasyZip
 
 WINDOWS_NODEJS_EXE = 'http://nodejs.org/dist/v0.10.23/node.exe'
 
@@ -55,7 +56,12 @@ module.exports = (cb)->
           res.pipe(fs.createWriteStream(path.join(outputDirectory, 'node.exe'), {flags:'w', encoding:null, mode:777}))
             .on 'close', ->
               console.log "Done."
-              cb(null)
+              process.stdout.write "Zipping..."
+              zip = new EasyZip()
+              zip.zipFolder outputDirectory, ->
+                zip.writeToFile(outputDirectory+'.zip')
+                console.log "Done."
+                cb(null)
             .on('error', cb)
   #
   # Copy files
@@ -70,8 +76,4 @@ module.exports = (cb)->
           console.log "Done."
           postCopy(cb)
         .on('error', cb)
-
-
-
-
 
