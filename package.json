@@ -27,6 +27,8 @@
     "JSONStream": "~0.7.1",
     "event-stream": "~3.0.20",
     "coffee-script": "~1.6.3",
-    "easy-zip": "0.0.4"
+    "easy-zip": "0.0.4",
+    "tar.gz": "~0.1.1",
+    "tar": "~0.1.19"
   }
 }

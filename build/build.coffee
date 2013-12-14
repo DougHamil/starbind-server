@@ -6,8 +6,11 @@ ncp = require 'ncp'
 http = require 'http'
 path = require 'path'
 EasyZip = require('easy-zip').EasyZip
+tar = require 'tar'
+S = require 'string'
 
 WINDOWS_NODEJS_EXE = 'http://nodejs.org/dist/v0.10.23/node.exe'
+MAC_NODEJS_EXE = 'http://nodejs.org/dist/v0.10.23/node-v0.10.23-darwin-x86.tar.gz'
 
 # Files to not copy to output directory
 IGNORE_FILES = ['config_server.default.json', 'config.default.json', 'config.json', 'build.js', 'install.sh', 'run.sh', '.nodemonignore', '.gitignore', 'README.md', 'package.json']
@@ -46,6 +49,13 @@ module.exports = (cb)->
           if file.indexOf(dir) == 0
             return false
         return true
+  archiveOutputDirectory = (cb) ->
+    process.stdout.write "Zipping..."
+    zip = new EasyZip()
+    zip.zipFolder outputDirectory, ->
+      zip.writeToFile(outputDirectory+'.zip')
+      console.log "Done."
+      cb(null)
 
   # Called after scripts are copied
   postCopy = (cb) ->
@@ -56,12 +66,26 @@ module.exports = (cb)->
           res.pipe(fs.createWriteStream(path.join(outputDirectory, 'node.exe'), {flags:'w', encoding:null, mode:777}))
             .on 'close', ->
               console.log "Done."
-              process.stdout.write "Zipping..."
-              zip = new EasyZip()
-              zip.zipFolder outputDirectory, ->
-                zip.writeToFile(outputDirectory+'.zip')
-                console.log "Done."
-                cb(null)
+              archiveOutputDirectory(cb)
+            .on('error', cb)
+      when "darwin"
+        process.stdout.write "Downloading node binaries..."
+        http.get MAC_NODEJS_EXE, (res) ->
+          tarFile = path.join(outputDirectory, 'node.tar.gz')
+          res.pipe(fs.createWriteStream(tarFile), {flags:'w', encoding:null, mode:777})
+            .on 'close', ->
+              # Untar the binaries
+              fs.createReadStream(tarFile).pipe(require('zlib').createGunzip()).pipe(tar.Parse())
+                .on 'entry', (entry) ->
+                  console.log entry
+                  if S(entry.props.path).endsWith('node')
+                    entry.pipe(fs.createWriteStream(path.join(outputDirectory, 'node')))
+                      .on 'close', ->
+                        fs.chmodSync path.join(outputDirectory, 'node'), '755'
+                        console.log "Done."
+                        archiveOutputDirectory(cb)
+                      .on('error', cb)
+                .on('error', cb)
             .on('error', cb)
   #
   # Copy files
