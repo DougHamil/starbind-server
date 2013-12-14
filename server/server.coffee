@@ -12,6 +12,9 @@ SyncController = require './controllers/sync'
 
 sessionStore = new express.session.MemoryStore()
 
+if not CONFIG.isServer and not CONFIG.SESSION_SECRET?
+  CONFIG.SESSION_SECRET = 'STARBIND_CLIENT_SESSION'
+
 app = express()
 app.use express.bodyParser()
 app.use express.cookieParser()

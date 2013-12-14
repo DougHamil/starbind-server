@@ -9,7 +9,7 @@ path = require 'path'
 WINDOWS_NODEJS_EXE = 'http://nodejs.org/dist/v0.10.23/node.exe'
 
 # Files to not copy to output directory
-IGNORE_FILES = ['config_server.default.json', 'config.default.json', 'config.json', 'build.js', 'install.sh', 'run.sh', 'README.md', 'package.json']
+IGNORE_FILES = ['config_server.default.json', 'config.default.json', 'config.json', 'build.js', 'install.sh', 'run.sh', '.nodemonignore', '.gitignore', 'README.md', 'package.json']
 # Directories not to copy to output directory
 IGNORE_DIRS = ['build', 'mods']
 
@@ -22,7 +22,7 @@ module.exports = (cb)->
   platform = process.argv[2]
 
 # Clean output directory
-  outputDirectory = path.join(process.cwd(), process.argv[3])
+  outputDirectory = path.resolve(process.cwd(), process.argv[3])
   console.log "Output directory set to #{outputDirectory}"
   process.stdout.write 'Preparing output directory...'
   if fs.existsSync outputDirectory
@@ -30,12 +30,15 @@ module.exports = (cb)->
   mkdirp.sync outputDirectory
   console.log "Done."
 
-  ignoreFiles = IGNORE_FILES.map (file) -> return path.join(process.cwd(), file)
-  ignoreDirs = IGNORE_DIRS.map (dir) -> return path.join(process.cwd(), dir)
+  ignoreFiles = IGNORE_FILES.map (file) -> return path.resolve(process.cwd(), file).replace(/\\/g, '/')
+  ignoreDirs = IGNORE_DIRS.map (dir) -> return path.resolve(process.cwd(), dir).replace(/\\/g, '/')
 
   opts =
     filter: (file) ->
-      if file in ignoreFiles
+      file = file.replace(/\\/g, '/')
+      if file[0] == '.'
+        return false
+      else if file in ignoreFiles
         return false
       else
         for dir in ignoreDirs
