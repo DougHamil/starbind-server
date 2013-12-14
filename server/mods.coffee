@@ -167,9 +167,9 @@ module.exports =
 
   extractModConf: (zipEntries) ->
     for entry in zipEntries
-      if modconfs[entry.entryName]
+      if modconfs[entry.entryName.toLowerCase()]
         try
-          return modconfs[entry.entryName](JSON.parse(entry.getData().toString()))
+          return modconfs[entry.entryName.toLowerCase()](JSON.parse(entry.getData().toString()))
         catch err
           console.warn "Unable to parse #{entry.entryName}"
     return null
