@@ -8,6 +8,7 @@ try
   CONFIG = JSON.parse(fs.readFileSync(source, 'utf8'))
   CONFIG.__source = source
 catch err
+  console.log "Error parsing config.json: #{err}"
   source = path.join process.cwd(), 'config.default.json'
   CONFIG = JSON.parse(fs.readFileSync(source, 'utf8'))
   CONFIG.__source = source

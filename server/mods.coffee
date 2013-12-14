@@ -54,6 +54,7 @@ module.exports =
           # update index
           @index[confData.file] = confData
         catch err
+          console.log "Error extracting mods #{err}"
           cb err
         cb null
       async.each zipFiles, handleZipFile, cb

@@ -24,7 +24,7 @@ exports.init = (app) ->
     res.send 200
 
   app.get '/admin', (req, res) ->
-    res.render 'admin', {installFound:Starbound.repo?,status:{isRunning:Starbound.game.serverProcess?, log:Starbound.log},config:Starbound.game.config}
+    res.render 'admin', {installFound:Starbound.installFound,status:{isRunning:Starbound.game.serverProcess?, log:Starbound.log},config:Starbound.game.config}
 
   app.get '/login', (req, res) ->
     loginFound = CONFIG.ADMIN_USERNAME? and CONFIG.ADMIN_USERNAME isnt '' and CONFIG.ADMIN_PASSWORD? and CONFIG.ADMIN_PASSWORD isnt ''

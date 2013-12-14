@@ -45,7 +45,7 @@ module.exports =
   mods:mods
   serverProcess: null
   log:[]
-  modPath: path.resolve(process.cwd(), '../mods')
+  modPath: path.resolve(process.cwd(), 'mods')
   gamePath:gamePath
   assetPath: repoPath
   realAssetPath: realAssetPath
@@ -125,6 +125,7 @@ module.exports =
       console.log "Creating mod package directory at #{@modPath}"
       fs.mkdirSync @modPath
     if @installFound
+      console.log "Found Starbound installation!"
       @setupBootstrap (err) =>
         if err?
           cb err

@@ -4,3 +4,4 @@ node_modules
 config.json
 data.json
 mods
+.DS_Store
