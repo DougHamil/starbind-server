@@ -69,6 +69,12 @@ module.exports = (cb)->
               archiveOutputDirectory(cb)
             .on('error', cb)
       when "darwin"
+        step = 0
+        nextStep = ->
+          step++
+          if step > 1
+            archiveOutputDirectory(cb)
+
         process.stdout.write "Downloading node binaries..."
         http.get MAC_NODEJS_EXE, (res) ->
           tarFile = path.join(outputDirectory, 'node.tar.gz')
@@ -77,15 +83,17 @@ module.exports = (cb)->
               # Untar the binaries
               fs.createReadStream(tarFile).pipe(require('zlib').createGunzip()).pipe(tar.Parse())
                 .on 'entry', (entry) ->
-                  console.log entry
                   if S(entry.props.path).endsWith('node')
                     entry.pipe(fs.createWriteStream(path.join(outputDirectory, 'node')))
                       .on 'close', ->
                         fs.chmodSync path.join(outputDirectory, 'node'), '755'
                         console.log "Done."
-                        archiveOutputDirectory(cb)
+                        nextStep()
                       .on('error', cb)
                 .on('error', cb)
+                .on 'end', ->
+                  fs.unlinkSync tarFile
+                  nextStep()
             .on('error', cb)
   #
   # Copy files
