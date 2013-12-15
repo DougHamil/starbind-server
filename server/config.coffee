@@ -1,6 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 os = require 'os'
+S = require 'string'
 
 CONFIG = {}
 try
@@ -33,6 +34,11 @@ CONFIG.saveSync = ->
   fs.writeFileSync path.join(process.cwd(), 'config.json'), JSON.stringify(CONFIG, null, 2)
   CONFIG.__source = source
   CONFIG.isServer = isServer
+
+if CONFIG.STARBOUND_INSTALL_DIR?
+  dir = S(CONFIG.STARBOUND_INSTALL_DIR)
+  if dir.endsWith('/')
+    CONFIG.STARBOUND_INSTALL_DIR = dir.left(dir.length - 1)
 
 CONFIG.isServer = false
 process.argv.forEach (val, index, array) ->
