@@ -31,6 +31,16 @@ And run Starbind with
 
 ` node app.js server`
 
+To easily keep your Starbind server running (and restarting automatically on crashes), `forever` is a great NodeJS application for doing this. Install `forever` with:
+
+`sudo npm install -g forever`
+
+And start Starbind server using `forever` with:
+
+`forever start app.js server`
+
+Read more on using `forever` [here](http://blog.nodejitsu.com/keep-a-nodejs-server-up-with-forever)
+
 Starbind Server Configuration Settings
 ----------------
 The config.json file contains the various configuration settings available:
