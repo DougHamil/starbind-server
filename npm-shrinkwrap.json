@@ -315,7 +315,7 @@
           }
         },
         "pullstream": {
-          "version": "latest",
+          "version": "git+http://github.com/EvanOxfeld/node-pullstream.git",
           "from": "pullstream@~0.4.0",
           "dependencies": {
             "over": {
