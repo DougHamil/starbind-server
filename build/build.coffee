@@ -5,7 +5,6 @@ rimraf = require 'rimraf'
 ncp = require 'ncp'
 http = require 'http'
 path = require 'path'
-EasyZip = require('easy-zip').EasyZip
 tar = require 'tar'
 S = require 'string'
 
@@ -50,12 +49,7 @@ module.exports = (cb)->
             return false
         return true
   archiveOutputDirectory = (cb) ->
-    process.stdout.write "Zipping..."
-    zip = new EasyZip()
-    zip.zipFolder outputDirectory, ->
-      zip.writeToFile(outputDirectory+'.zip')
-      console.log "Done."
-      cb(null)
+    cb null
 
   # Called after scripts are copied
   postCopy = (cb) ->
