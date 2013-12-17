@@ -16,6 +16,7 @@ MOD_INSTALL_DIR = 'starbind_mods'
 
 util.verifyStarboundInstallPath()
 
+emptyModPath = path.join CONFIG.STARBOUND_INSTALL_DIR, "starbind_empty_mods"
 repoPath = path.join CONFIG.STARBOUND_INSTALL_DIR, MOD_INSTALL_DIR
 realAssetPath = path.join CONFIG.STARBOUND_INSTALL_DIR, "assets"
 gamePath = path.join CONFIG.STARBOUND_INSTALL_DIR, util.getExePath()
@@ -43,6 +44,7 @@ module.exports =
   mods:mods
   serverProcess: null
   log:[]
+  emptyModPath:emptyModPath
   modPath: path.resolve(process.cwd(), 'mods')
   gamePath:gamePath
   assetPath: repoPath
@@ -102,9 +104,10 @@ module.exports =
       else
         if "../assets" in bootstrap.assetSources
           bootstrap.assetSources = ['../assets', "../#{MOD_INSTALL_DIR}"]
+          bootstrap.modSource = '../starbind_empty_mods'
         else if "../../../assets" in bootstrap.assetSources
           bootstrap.assetSources = ['../../../assets',  "../../../#{MOD_INSTALL_DIR}"]
-        bootstrap.modSource = null
+          bootstrap.modSource = '../../../starbind_empty_mods'
         console.log "Added #{MOD_INSTALL_DIR} to #{path.join(@gamePath, "bootstrap.config")}."
         fs.writeFileSync path.join(@gamePath, "bootstrap.config"), JSON.stringify(bootstrap, null, 2)
         cb null
@@ -123,6 +126,8 @@ module.exports =
     if not fs.existsSync(@modPath)
       console.log "Creating mod package directory at #{@modPath}"
       fs.mkdirSync @modPath
+    if not fs.existsSync(@emptyModPath)
+      fs.mkdirSync @emptyModPath
     if @installFound
       console.log "Found Starbound installation!"
       @setupBootstrap (err) =>
