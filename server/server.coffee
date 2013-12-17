@@ -18,7 +18,9 @@ if not CONFIG.isServer and not CONFIG.SESSION_SECRET?
 app = express()
 app.use express.bodyParser()
 app.use express.cookieParser()
-app.use express.session({store:sessionStore, secret: CONFIG.SESSION_SECRET})
+
+if CONFIG.SESSION_SECRET?
+  app.use express.session({store:sessionStore, secret: CONFIG.SESSION_SECRET})
 app.use express.static(__dirname + '/public')
 app.use Security.authHandler
 app.set 'views', path.resolve(__dirname,'../views')
