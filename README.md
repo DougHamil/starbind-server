@@ -6,6 +6,13 @@ Starbind is a program to allow easy mod synchronization between clients and serv
 If you host a Starbound server and would like to allow players to use Starbind to synchronize mods specifically for your
 server, then follow the Server installation instructions below.
 
+Running Starbind Client - Linux
+-------------------------------
+
+Follow the setup instructions for the Starbind server below and then to run just the Starbind client use:
+
+`node app.js`
+
 Hosting a Starbind Server
 ---------------------------------
 
