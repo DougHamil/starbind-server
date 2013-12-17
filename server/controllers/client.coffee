@@ -4,7 +4,6 @@ os = require 'os'
 rimraf = require 'rimraf'
 ncp = require 'ncp'
 path = require 'path'
-temp = require 'temp'
 util = require '../util'
 spawn = require('child_process').spawn
 httpSyncClient = require('http-dir-sync').Client

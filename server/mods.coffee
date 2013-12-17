@@ -11,10 +11,9 @@ require 'colors'
 S = require 'string'
 deepmerge = require 'deepmerge'
 JSONStream = require 'JSONStream'
-es = require 'event-stream'
 minify = require('./minify').minify
 
-UNMERGEABLE_FILE_EXTS = ['.ogg', '.png', '.tif', '.wav', '.abc']
+UNMERGEABLE_FILE_EXTS = ['.otf', '.ttf', '.ogg', '.png', '.tif', '.wav', '.abc']
 
 # Handlers for various types of mod meta-data
 modconfs =
@@ -125,7 +124,7 @@ module.exports =
       entryPath = path.join entryPath...
     absEntryPath = path.join(destDir, entryPath)
     mkdirp.sync path.dirname(absEntryPath)
-    if S(entryPath).right(4) in UNMERGEABLE_FILE_EXTS
+    if S(entryPath).right(4).s in UNMERGEABLE_FILE_EXTS
       # Just write out the files, overwriting whatever was there previously
       console.log "Saving #{entryPath}"
       entry.pipe(fs.createWriteStream(absEntryPath))
@@ -133,12 +132,10 @@ module.exports =
     else
       if runningIndex[entryPath]?
         console.log "Merging #{entryPath}"
-        @mergeFiles absEntryPath, entry, (err, merged) =>
-          fs.writeFile absEntryPath, JSON.stringify(merged, null, 2), cb
+        @mergeFiles absEntryPath, absEntryPath, entry, cb
       else if @gameIndex[entryPath]?
         console.log "Merging #{entryPath}"
-        @mergeFiles path.join(@realDir, entryPath), entry, (err, merged) =>
-          fs.writeFile absEntryPath, JSON.stringify(merged, null, 2), cb
+        @mergeFiles path.join(@realDir, entryPath), absEntryPath, entry, cb
       else
         console.log "Saving #{entryPath}"
         outStream = fs.createWriteStream(absEntryPath)
@@ -206,10 +203,13 @@ module.exports =
       else
         extractPackages()
 
-  mergeFiles: (diskFilePath, zipEntry, cb) ->
+  mergeFiles: (diskFilePath, absEntryPath, zipEntry, cb) ->
     @loadAsset diskFilePath, (err, diskData) ->
+      # If we failed to load from disk, most likely due to unmerged file type
       if err?
-        cb err
+        console.log "#{zipEntry.path} is not merge-able, overwritting instead".yellow
+        zipEntry.pipe(fs.createWriteStream(absEntryPath))
+          .on('finish', cb)
       else
         # We cannot use JSONStream here because it doesn't handle comments in json files
         zipString = ''
@@ -217,8 +217,14 @@ module.exports =
           zipString += data.toString()
         zipEntry.on 'error', cb
         zipEntry.on 'end', ->
-          zipData = JSON.parse(minify(zipString))
-          cb null, deepmerge(diskData, zipData)
+          try
+            zipData = JSON.parse(minify(zipString))
+            fs.writeFile absEntryPath, JSON.stringify(deepmerge(diskData, zipData), null, 2), cb
+          catch err
+            console.log "Error merging #{zipEntry.path}:".red
+            console.log err
+            console.log "Skipping."
+            cb null
 
   extractModConf: (zipEntries) ->
     for entry in zipEntries

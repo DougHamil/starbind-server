@@ -9,9 +9,7 @@ rimraf = require 'rimraf'
 ncp = require 'ncp'
 os = require 'os'
 _ = require 'underscore'
-temp = require 'temp'
 minify = require('./minify').minify
-temp.track()
 
 BOOTSTRAP_BACKUP_FILE = 'backup.bootstrap.config'
 MOD_INSTALL_DIR = 'starbind_mods'
