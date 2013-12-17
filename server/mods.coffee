@@ -1,3 +1,4 @@
+CONFIG = require './config'
 fs = require 'fs'
 unzip = require 'unzip'
 path = require 'path'

@@ -104,6 +104,7 @@ module.exports =
           bootstrap.assetSources = ['../assets', "../#{MOD_INSTALL_DIR}"]
         else if "../../../assets" in bootstrap.assetSources
           bootstrap.assetSources = ['../../../assets',  "../../../#{MOD_INSTALL_DIR}"]
+        bootstrap.modSource = null
         console.log "Added #{MOD_INSTALL_DIR} to #{path.join(@gamePath, "bootstrap.config")}."
         fs.writeFileSync path.join(@gamePath, "bootstrap.config"), JSON.stringify(bootstrap, null, 2)
         cb null

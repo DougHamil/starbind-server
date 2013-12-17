@@ -29,11 +29,14 @@ CONFIG.save = (cb) ->
 CONFIG.saveSync = ->
   source = CONFIG.__source
   isServer = CONFIG.isServer
+  noMerge = CONFIG.noMerge
   delete CONFIG.__source
   delete CONFIG.isServer
+  delete CONFIG.noMerge
   fs.writeFileSync path.join(process.cwd(), 'config.json'), JSON.stringify(CONFIG, null, 2)
   CONFIG.__source = source
   CONFIG.isServer = isServer
+  CONFIG.noMerge = noMerge
 
 if CONFIG.STARBOUND_INSTALL_DIR?
   dir = S(CONFIG.STARBOUND_INSTALL_DIR)
@@ -48,4 +51,5 @@ process.argv.forEach (val, index, array) ->
   else if val == 'nomerge'
     CONFIG.noMerge = true
 
+console.log CONFIG.noMerge
 module.exports = CONFIG
