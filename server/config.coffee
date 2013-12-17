@@ -41,8 +41,11 @@ if CONFIG.STARBOUND_INSTALL_DIR?
     CONFIG.STARBOUND_INSTALL_DIR = dir.left(dir.length - 1)
 
 CONFIG.isServer = false
+CONFIG.noMerge = false
 process.argv.forEach (val, index, array) ->
   if val == 'server'
     CONFIG.isServer = true
+  else if val == 'nomerge'
+    CONFIG.noMerge = true
 
 module.exports = CONFIG

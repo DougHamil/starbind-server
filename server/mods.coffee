@@ -124,7 +124,9 @@ module.exports =
       entryPath = path.join entryPath...
     absEntryPath = path.join(destDir, entryPath)
     mkdirp.sync path.dirname(absEntryPath)
-    if S(entryPath).right(4).s in UNMERGEABLE_FILE_EXTS
+
+    # If merging is disabled, just overwrite
+    if CONFIG.noMerge or S(entryPath).right(4).s in UNMERGEABLE_FILE_EXTS
       # Just write out the files, overwriting whatever was there previously
       console.log "Saving #{entryPath}"
       entry.pipe(fs.createWriteStream(absEntryPath))
