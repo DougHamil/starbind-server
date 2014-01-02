@@ -50,6 +50,14 @@ ARCHES =
         path.join(process.env.HOME, '.steam/steam/SteamApps/common/Starbound'),
         '/home/steam/SteamApps/common/Starbound'
       ]
+    ia32:
+      exePath: 'linux32'
+      exe: 'launch_starbound.sh'
+      server_exe: 'launch_starbound_server.sh'
+      dirs:[
+        path.join(process.env.HOME, '.steam/steam/SteamApps/common/Starbound'),
+        '/home/steam/SteamApps/common/Starbound'
+      ]
   darwin:
     x64:
       exePath: 'Starbound.app/Contents/MacOS'
@@ -59,6 +67,13 @@ ARCHES =
         path.join(process.env.HOME, 'Library/Application Support/Steam/SteamApps/common/Starbound')
       ]
     x86:
+      exePath: 'Starbound.app/Contents/MacOS'
+      exe: 'starbound'
+      server_exe: 'starbound_server'
+      dirs: [
+        path.join(process.env.HOME, 'Library/Application Support/Steam/SteamApps/common/Starbound')
+      ]
+    ia32:
       exePath: 'Starbound.app/Contents/MacOS'
       exe: 'starbound'
       server_exe: 'starbound_server'
